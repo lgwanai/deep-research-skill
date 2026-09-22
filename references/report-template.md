@@ -117,6 +117,8 @@ Use a table or timeline when dates/numbers drive the conclusion.
 
 Use for market, industry, competitive intelligence, brand, investment, and strategy tasks.
 
+For expert-grade industry research, also read `references/industry-expert-research.md` and use its market-structure, value-chain, economics, regulation, and expert-judgment sections.
+
 ```markdown
 # <Subject> Research Report
 
@@ -268,6 +270,30 @@ Append or summarize this section for Pro/Ultra reports, high-stakes topics, conf
 - [Title](URL) — reason (stale, marketing-only, paywalled, duplicate, low quality)
 
 > Optional: install markitdown (`pip install markitdown`) for cleaner page extraction on document-heavy research tasks.
+```
+
+## Evidence Validation Appendix
+
+Add or summarize this section for finance, policy, numerical comparisons, disputed research, or deliverables that must be independently checked. Follow `references/evidence-validation.md`.
+
+```markdown
+## Evidence Validation
+
+| Claim | Type | Entity / period | Metric / scope / unit | Evidence location | Validation | Notes |
+|---|---|---|---|---|---|---|
+| ... | fact / attributed view / synthesis / estimate / assumption | ... | ... | page, section, table or paragraph | supported / partial / conflicting / unsupported | ... |
+
+### Numerical Checks
+
+| Derived result | Raw values | Formula or conversion | Check result |
+|---|---|---|---|
+| ... | ... | ... | passed / needs review |
+
+### Unresolved Items
+
+- Material conflicts:
+- Missing fields or sources:
+- Claims removed or weakened after validation:
 ```
 
 ## Writing Rules

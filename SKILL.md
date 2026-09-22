@@ -1,212 +1,133 @@
 ---
 name: "deep-research-agent"
-description: "Zero-config deep research skill for any task that needs current web research, multi-source verification, competitive/market/product analysis, literature-style synthesis, or evidence-backed content generation. Use before writing reports, strategies, decks, articles, designs, or decisions that depend on external facts. Uses the host agent's native search/fetch/browser tools first; bundled scripts are only readability fallbacks."
+description: "Research current or uncertain external facts, compare products/companies/markets, investigate industries or securities, and produce evidence-backed briefs or reports. Use when the answer requires web retrieval, multiple sources, source validation, or expert-domain synthesis; do not use for purely local edits or unsupported drafting."
 ---
 
 # Deep Research Agent
 
-This skill turns the host agent into a precise deep-research operator without API keys, custom runtimes, or DeerFlow's model/tool configuration. It ports DeerFlow's strongest ideas: research before generation, broad-to-narrow search, mode presets, evidence discipline, source quality checks, and structured synthesis.
+Produce decision-useful research whose material claims can be traced to current, correctly interpreted evidence. The core workflow uses tools already available in the host; optional search, browser, platform, finance, and extraction capabilities improve reach but are not required for every task.
 
-## Trigger
+## Select Depth
 
-Use this skill when the user asks to search, investigate, research, compare, analyze, explain current information, find latest developments, prepare a report, prepare content that needs real-world facts, or make a decision using external evidence.
+Choose the smallest sufficient mode:
 
-Do not use it for purely local code edits, text polishing with no fact checking, or stable common knowledge unless the user asks for verification.
-
-## Operating Principles
-
-1. Research before writing. For reports, decks, articles, strategies, comparisons, and design/content briefs, never draft first and retrofit citations.
-2. Native tools first. Use the host's built-in web search, web fetch, browser, file, image, and multimodal abilities. Do not require Tavily, Jina, custom model config, or DeerFlow runtime.
-3. Search is iterative. One query is only enough for a tiny fact lookup. Normal research requires multiple angles, full-page reading, gap detection, and follow-up queries. Use query auto-expansion after the first pass so follow-up searches are grounded in retrieved evidence, not intuition.
-4. Evidence beats fluency. Every important factual claim needs a source, and every recommendation must be traceable to evidence or labeled as judgment.
-5. Keep uncertainty visible. Separate confirmed facts, high-confidence synthesis, assumptions, conflicts, and unknowns.
-6. Verify retrieval coverage before delivery. For Standard+, run a compact coverage self-check: are the dimensions that matter to the user covered with adequate sources?
-7. Deduplicate evidence. The same article across five sites is one source, not five. Trace claims to their origin; count independent sources, not appearances.
-
-## Mode Selection
-
-Choose the smallest mode that can answer well.
-
-| Mode | Use case | Minimum bar |
+| Mode | Use | Required outcome |
 |---|---|---|
-| Quick | Single fact, definition, small update | 1-2 searches, fetch 1 authoritative page, cite sources |
-| Standard | Topic overview, product comparison, current explanation | 3+ search angles, 3+ sources, fetch key pages, include risks/unknowns |
-| Pro | Research report, buying/strategy advice, content pre-research | Research map, evidence ledger, source triangulation, structured recommendation |
-| Ultra | Broad market/industry/competitive research, many entities | Explicit workstreams, batched searches/fetches, interim synthesis, scoped final report |
+| Quick | One bounded current fact | Read an authoritative source and cite the answer |
+| Standard | Overview, comparison, current explanation | Cover multiple angles, read key pages, state risks/gaps |
+| Pro | Report, diligence, strategy, investment research | Research map, adaptive queue, evidence ledger, validation, structured recommendation |
+| Ultra | Broad/high-stakes work with interacting questions | Independent workstreams, convergence review, adversarial pass, reproducible package |
 
-If the request is broad enough that quality will suffer, ask one concise scope question. Otherwise proceed with reasonable assumptions and state them.
+Ask one concise scope question only when geography, entity, time horizon, or decision context would materially change the method. Otherwise state reasonable assumptions and proceed.
 
-## Core Workflow
+## Route The Task
 
-### 1. Frame The Question
+Before retrieval:
 
-Identify:
+1. Define the user's decision or deliverable, entities, geography, time window, audience, exclusions, and information cutoff.
+2. For expert-level industry, company, securities, macro, technology, healthcare, or energy work, read `references/expert-router.md`, then load one primary expert and no more than two supporting experts.
+3. For any stock, bond, ETF, listed company valuation, earnings, catalyst, or investment-risk request, always load `references/expert-equity-securities.md`.
+4. Select one primary export from `references/exports/README.md` only when a formal deliverable is needed.
+5. Use `references/report-template.md` for general briefs, comparisons, or reports.
 
-- User decision or output goal
-- Entities, geography, time window, audience, and exclusions
-- Whether the answer needs current information
-- What would change the conclusion
+## Audit Retrieval Capabilities
 
-For complex work, create a short research map before searching:
+For external research, inspect host-native tools, MCP/apps/plugins, local skills, browser sessions, and available CLIs before choosing a path. Read `references/retrieval-tool-planning.md` for broad search, blocked engines, social/video/forum content, JavaScript pages, scraping, or financial data.
 
-```text
-Research map:
-1. Official/current facts
-2. Data and metrics
-3. Independent analysis
-4. Examples/cases
-5. Risks, limits, criticism
-6. Implications for the user's goal
-```
-
-### 2. Search Broad, Then Narrow
-
-Start broad to map the landscape, then narrow by dimension. Vary query phrasing and source type.
-
-**Query auto-expansion**: After the first broad search, extract entities, technical terms, controversy signals, and temporal markers from results. Generate a second round of queries combining the topic with extracted terms. This surfaces sub-topics the agent might not think to ask about.
-
-Required angle set for Standard and above:
-
-- Official or primary source
-- Independent third-party source
-- Data/statistics or concrete examples
-- Limitations, risks, criticism, or counter-position
-
-For time-sensitive queries, use the actual current date from the environment. "Today" needs month + day + year, not just the year.
-
-**Retrieval fallback chain**: When a search yields nothing useful, relax the query, rewrite with synonyms, change source if the host supports it, search adjacent topics, then declare the gap. Summarize only material escalations in the final answer.
-
-**Chinese ecosystem**: When the topic involves China or the user's context is Chinese, run bilingual searches (Chinese + English). Target platform-specific queries: WeChat articles (`site:mp.weixin.qq.com`), Zhihu (`site:zhihu.com`), government sites (`site:gov.cn`), and Chinese research reports. See `references/research-workflow.md` for the full strategy.
-
-### 3. Fetch And Read Key Sources
-
-Search snippets are leads, not evidence. Fetch full content for the sources that will support key claims.
-
-**Parallel fetch**: For Standard+, identify top candidates per dimension and fetch them in parallel. Skim each for date, author, data presence, and primary-source links. Deep-read only the strongest 1-2 per dimension.
-
-**Retrieval budget**: Allocate ~40% of searches/fetches to core facts, ~35% to independent analysis, ~25% to context. Apply early stopping: if two consecutive searches in a dimension return no new facts, move budget elsewhere.
-
-Prioritize fetches for:
-
-- Official docs, release notes, filings, standards, laws, papers
-- Pages with numbers, dates, tables, methods, or case details
-- Sources likely to contradict or qualify the emerging answer
-
-**Structured data extraction**: When reading pages, actively extract tables, dates, numbers-with-units, and author/organization metadata. Do not treat all page content as flat text.
-
-If native fetch returns noisy content, use `scripts/markitdown_readable.py` as a fallback for URLs or local files:
+When shell access exists, use this only as a local signal:
 
 ```bash
-python3 scripts/markitdown_readable.py "https://example.com"
-python3 scripts/markitdown_readable.py ./source.pdf -o source.md
+python3 scripts/detect_retrieval_capabilities.py
 ```
 
-If markitdown is not installed, skip this step and work with raw fetch output. Mention installation only when the missing package materially reduced extraction quality.
+Tool selection is capability-first:
 
-### 4. Build An Evidence Ledger
+- Broad search: prefer Agent Reach search/Exa, Brave, Tavily, or another dedicated provider when available.
+- Social, video, forums, repositories, and finance: prefer platform-native or specialized tools.
+- Known official/static page: use official APIs, fetch, or a reader.
+- JavaScript or interaction: use a rendered browser; use full automation only when needed and authorized.
+- Multi-page corpus: use a crawler when available.
+- Generic WebSearch/WebFetch: use when sufficient or as a fallback, not as an automatic first choice for search-engine discovery.
 
-Before final synthesis, mentally or explicitly track:
+Choose fallbacks by failure cause. Do not bypass authentication, paywalls, access controls, or user authorization. A missing CLI does not prove that the host lacks the equivalent MCP or built-in tool.
 
-| Claim | Source | Type | Date | Confidence | Notes |
-|---|---|---|---|---|---|
-| What the source supports | URL/title | primary/secondary/community | published/updated | high/med/low | conflicts, caveats |
+## Research Loop
 
-For Pro/Ultra reports, include the evidence ledger in notes or summarize it in the final methodology.
+For Standard and above, use the detailed loop in `references/research-workflow.md` and `references/depth-and-followup.md`:
 
-### 5. Validate
+1. Build a bounded question tree around what could change the answer.
+2. Search broadly enough to identify entities, terminology, original sources, controversy, and date/version signals.
+3. Turn unresolved evidence needs into a queue; the next query must address a gap, conflict, missing method, source chain, or counter-hypothesis.
+4. Fetch and read the strongest pages. Search snippets are discovery leads, not evidence.
+5. Follow derivative claims to original filings, datasets, laws, papers, specifications, or methodology.
+6. Stop a branch when it is resolved, reaches an information-gain plateau, or is explicitly classified as partial, conflicting, missing, or blocked.
 
-Do not finalize until you can answer:
+For Chinese or China-related topics, search in Chinese and English and use domestic official, filing, industry, and platform sources where they are closer to the subject.
 
-- Which key claims are directly sourced?
-- Which claims are synthesized from multiple sources?
-- Are there source conflicts, stale data, missing geography/time scope, or marketing bias?
-- Did you read full pages for the strongest claims?
-- Did you cover both supporting and limiting evidence?
-- **Coverage check**: Are all decision-critical dimensions covered with adequate sources? (See `references/research-workflow.md` for the checklist.)
-- **Dedup check**: Did you verify that "5 sources" are truly 5 independent sources, not 1 original + 4 syndications?
+## Evidence Invariants
 
-**Retrieval confidence**: Assign an overall confidence level before delivering:
+Read `references/source-quality.md` whenever external evidence determines the answer. Read `references/evidence-validation.md` for finance, policy, regulation, numerical comparisons, conflicting evidence, Pro/Ultra work, or auditability.
 
-- **High**: Strong primary or independent sources, recent data, decision-critical dimensions covered
-- **Medium**: Some dimensions rely on secondary sources, minor gaps acknowledged
-- **Low**: Sparse or low-quality sources, significant gaps, fast-moving topic with stale data
+Do not deliver until these invariants hold:
 
-If evidence is weak, say so. Do not invent numbers, dates, market sizes, benchmarks, quotes, or source consensus.
+- Material external claims have nearby citations to pages actually read.
+- Important numbers preserve entity, period, version, geography, definition, scope/denominator, unit/currency, and method.
+- Facts, attributed views, synthesis, estimates, and assumptions are distinguishable.
+- One original report repeated across sites counts as one evidence origin.
+- Supporting evidence and disconfirming evidence were both considered.
+- Conflicts and missing evidence change the wording, confidence, or recommendation.
+- Calculations that change the conclusion are reproducible from raw inputs and formulas.
+- Current or point-in-time work states an as-of date; historical snapshots exclude later knowledge unless labeled hindsight.
 
-### 6. Synthesize For The User's Goal
+For Pro/Ultra or resumable/auditable work, use `references/research-state-schema.md`. If a JSON research package is saved, validate it:
 
-Default output order:
-
-1. Bottom-line answer
-2. Key findings with inline citations
-3. Implications or recommendation
-4. Risks, conflicts, and unknowns
-5. Sources
-
-For formal reports or consulting-grade outputs, read `references/report-template.md` and follow the matching template.
-
-## Citation Rules
-
-Use clickable inline citations for factual claims that depend on external sources:
-
-```markdown
-The product launched in May 2026 [citation:Release Notes](https://example.com/release).
+```bash
+python3 scripts/validate_research_package.py research-package.json --strict
 ```
 
-End with a `Sources` section:
+## Sources And Authority
 
-```markdown
-## Sources
-- [Release Notes](https://example.com/release) - launch date and feature scope
-- [Independent Review](https://example.com/review) - third-party limitations and benchmark context
+Use `references/authoritative-sources.md` for broad source discovery. For structured filtering, query `references/source-registry.json`:
+
+```bash
+python3 scripts/query_source_registry.py --domain equity --region CN
 ```
 
-Required citations:
+The directory and registry are starting maps, not whitelists. Verify identity, recency, methodology, access, and relevance. Social/community material is useful for sentiment, complaints, language, and leads, but not as sole proof of market size, financial performance, regulatory status, or medical/safety claims.
 
-- Numbers, prices, dates, market size/share, rankings, laws, specs
-- "Latest", "recent", "today", "newly released"
-- Product capabilities, policies, compatibility, limitations
-- Third-party opinions, case studies, claims about sentiment or adoption
+## Delivery
 
-## Reference Files
+Lead with the bounded answer, then the evidence, implication, risks/conflicts/gaps, and sources. Use the host's supported clickable citation format near the claim. Do not add a large methodology appendix to routine answers; use `references/exports/source-audit-appendix.md` for audit-heavy work.
 
-Read only what the task needs:
+Assign confidence from evidence and coverage, not prose quality:
 
-- `references/research-workflow.md` - detailed workflow, query playbooks, mode checklists, evidence ledger usage
-- `references/source-quality.md` - source scoring, triangulation, conflict handling, freshness rules
-- `references/report-template.md` - output templates for briefs, comparisons, consulting reports, timelines, and content pre-research
+- High: decision-critical dimensions are covered by strong, current, mostly primary or independent evidence.
+- Medium: material conclusions are usable but rely on secondary evidence or contain bounded gaps.
+- Low: sparse, stale, inaccessible, conflicting, or weak evidence materially limits the answer.
 
 ## Hard Stops
 
-Stop and ask or disclose limitations when:
+Stop, narrow the conclusion, or request user input when:
 
-- No search/fetch/browser tool is available and the task depends on current external facts
-- The user asks for "latest/today/current" but sources found are stale or undated
-- A key claim appears in only one low-quality source
-- Required data is unavailable or paywalled and cannot be verified
-- The topic is high-stakes legal, medical, financial, or safety advice; use primary sources and provide careful caveats
-- **Coverage gap is critical**: A dimension essential to the user's decision remains uncovered after exhausting the fallback chain
-- **Contradiction is unresolved**: Two credible sources disagree on a fact the user's decision depends on, and neither can be dismissed
+- Current external facts are required but no retrieval path is available.
+- The requested cutoff cannot be respected or market-sensitive data cannot be timestamped.
+- A decision-critical claim remains supported only by a weak source after reasonable alternatives.
+- Credible sources conflict on a fact that controls the decision.
+- Required data is paywalled, login-bound, unavailable, or not comparable and no authorized fallback works.
+- A high-stakes conclusion would exceed the available legal, medical, financial, or safety evidence.
 
-## Markitdown Note
+Never invent facts, quotations, prices, market sizes, consensus, calculations, sources, or access to unavailable content.
 
-This skill uses `scripts/markitdown_readable.py` as an optional readability fallback for noisy HTML pages and local documents (PDF, DOCX, etc.). The script requires the `markitdown` Python package.
+## Reference Routing
 
-If markitdown is not installed, the skill works fine without it: use the host agent's native fetch output. Only mention installation when extraction failed or the user is likely to repeat document-heavy research.
+Load only what the task needs:
 
-Suggested wording: `Optional: install markitdown with pip install markitdown for cleaner extraction from noisy pages and PDFs.`
+- Workflow/depth: `references/research-workflow.md`, `references/depth-and-followup.md`
+- Retrieval: `references/retrieval-tool-planning.md`
+- Evidence: `references/source-quality.md`, `references/evidence-validation.md`, `references/research-state-schema.md`
+- Sources: `references/authoritative-sources.md`, `references/source-registry.md`
+- Experts: `references/expert-router.md` and the selected `references/expert-*.md`
+- Industry frame: `references/industry-expert-research.md`
+- Output: `references/report-template.md` or one file under `references/exports/`
 
-## Common Failure Modes
-
-- Answering from memory when the topic is current
-- Treating search snippets as evidence
-- Using only official marketing pages
-- Hiding contradictions
-- Over-citing trivial claims but leaving key claims unsupported
-- Producing a polished report with no methodology, scope, or uncertainty
-- **Duplicate overcount**: Treating the same article on 5 sites as 5 independent sources
-- **Dimension neglect**: Spending all the research budget on 1-2 dimensions while leaving criticism/risks uncovered
-- **Stale-data blindness**: Using outdated sources without checking freshness against the topic's decay rate
-- **Single-language bias**: Searching only in English for topics with significant Chinese/international dimensions
-- **No fallback escalation**: Declaring a dimension "not found" after one failed query instead of following the fallback chain
-- **Skipping the coverage self-check**: Delivering a report without verifying decision-critical dimensions are covered
+Use `scripts/markitdown_readable.py` only as an optional fallback for noisy pages or local documents when `markitdown` is installed.

@@ -2,6 +2,8 @@
 
 Use this file whenever a result depends on external evidence.
 
+For source discovery in industry, policy, finance, technology, healthcare, energy, legal, academic, or China/international research, also read `references/authoritative-sources.md`. When automatic filtering helps, query `references/source-registry.json` with `scripts/query_source_registry.py`.
+
 ## Source Hierarchy
 
 | Level | Examples | Best use |

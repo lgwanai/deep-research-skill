@@ -4,6 +4,10 @@ Use this file for Standard, Pro, and Ultra research. The goal is to produce usef
 
 ## Phase 0: Research Contract
 
+Before writing the research contract, perform a retrieval tool audit when the task needs external information. Use `references/retrieval-tool-planning.md` for platform-specific, social, video, finance, JavaScript-heavy, or scraping-heavy tasks.
+
+For Pro/Ultra or resumable/auditable work, initialize the state described in `references/research-state-schema.md`. Update branches, sources, claims, calculations, coverage, and the retrieval log as work progresses. Keep this state internal unless the user requests an export.
+
 Establish the contract in one short internal note or visible plan:
 
 ```text
@@ -12,6 +16,7 @@ Decision/output:
 Scope:
 Time window:
 Required source types:
+Best retrieval tools:
 Likely risks/unknowns:
 ```
 
@@ -28,6 +33,8 @@ Run 2-4 broad searches using different phrasings:
 - `<topic> official docs OR announcement OR filing`
 - `<topic> market analysis OR case study OR limitations`
 
+Use the retrieval tools selected in Phase 0. If search engines block or degrade generic websearch/webfetch, switch to Agent Reach, Brave, Tavily, Exa, Lightpanda/rendered browser, or platform-native tools before treating the dimension as uncovered.
+
 Capture recurring:
 
 - Entities, products, people, organizations
@@ -37,6 +44,8 @@ Capture recurring:
 - Sources that appear original rather than derivative
 
 Do not conclude yet.
+
+After the broad pass, create the research queue described in `references/depth-and-followup.md`. Broad exploration maps the terrain; it does not satisfy a decision-critical question by itself.
 
 ### Query Auto-Expansion
 
@@ -61,6 +70,8 @@ Expanded:
 ```
 
 This replaces ad-hoc "what else should I search" decision-making with a mechanical step.
+
+Auto-expansion must not become a list of near-duplicate keyword searches. Convert useful discoveries into follow-up branches: trace the original source, inspect the method behind a number, test an alternative explanation, resolve a scope mismatch, or search for evidence that would overturn the emerging conclusion. Use `references/depth-and-followup.md`.
 
 ### Query Diversity Check
 
@@ -113,6 +124,8 @@ Must verify: current pricing, release status, known limitations
 
 Search each important dimension separately. Good query patterns:
 
+Run deep dive as an adaptive loop rather than a single batch. After every round, update each critical branch as resolved, partial, conflicting, or missing; generate the next query from the unresolved reason. Do not move to synthesis while a decision-critical branch is merely "relevant results found."
+
 - Official: `<entity> official docs`, `<entity> release notes <year>`, `<entity> pricing <year>`
 - Data: `<topic> statistics <year>`, `<topic> market size <year>`, `<topic> benchmark`
 - Cases: `<topic> case study`, `<entity> customer story`, `<technology> production use`
@@ -147,6 +160,8 @@ Allocate search and fetch capacity by dimension importance, not evenly:
 
 **Early stopping rule**: If two consecutive searches in a dimension return no new facts (only restatements of already-collected information), stop that dimension and reallocate budget to others.
 
+Apply early stopping only after checking whether the branch still lacks an original source, method, scope, counter-evidence, or conflict resolution. Repeated summaries are a reason to change retrieval strategy, not automatically a reason to abandon a critical branch.
+
 ### Structured Data Extraction
 
 When fetching pages, actively extract structured information instead of treating all content as flat text:
@@ -166,6 +181,14 @@ For Pro/Ultra tasks, keep a compact evidence ledger. It can stay internal unless
 | Claim | Source | Type | Date | Confidence | Notes |
 |---|---|---|---|---|---|
 | ... | ... | primary / secondary / community | ... | high / medium / low | ... |
+```
+
+For finance, policy, metrics, comparisons, or other correctness-sensitive work, use the expanded ledger and calibration rules in `references/evidence-validation.md`. A source is not accepted merely because it is authoritative: the exact passage must support the exact claim under the same entity, period, scope, version, metric definition, and unit.
+
+When a machine-readable package is created, validate it before delivery:
+
+```bash
+python3 scripts/validate_research_package.py research-package.json --strict
 ```
 
 Confidence guide:
@@ -197,6 +220,16 @@ If data is missing:
 - State what was searched.
 - State the nearest available proxy if useful.
 - Do not invent estimates unless explicitly asked to model assumptions; label estimates clearly.
+
+Before synthesis, run a claim-level validation pass for decision-critical statements:
+
+1. Classify each statement as source fact, attributed view, synthesis, estimate, or assumption.
+2. Check the citation at passage level, not only page level.
+3. Normalize entity, period, geography, version, metric definition, unit/currency, and denominator.
+4. Recalculate conversions, growth rates, percentage-point changes, and totals when they affect the conclusion.
+5. Downgrade, rewrite, or remove statements that are only partially supported.
+
+Use `references/evidence-validation.md` for the full procedure and output statuses.
 
 **Gap escalation log**: Track which dimensions required fallback. Show this table only for Pro/Ultra reports, disputed research, or when the retrieval gap affects the recommendation:
 
@@ -287,11 +320,14 @@ Record the search queries and fetched URLs for auditability. Include this log on
 ### Pro
 
 - Research contract and map
+- Adaptive research queue with multi-hop source tracing and unresolved-question follow-ups
 - Dimension-specific searches with query auto-expansion
 - Parallel fetch with budget allocation
 - Evidence ledger
+- Field-level calibration and claim-to-evidence validation for correctness-sensitive claims
 - Source quality and freshness check
 - Contradiction auto-detection
+- Counter-evidence pass against the emerging conclusion
 - Gap escalation log
 - Structured answer or report with recommendations
 - Full coverage self-check; include a reproducibility log when trust/auditability matters
@@ -299,12 +335,21 @@ Record the search queries and fetched URLs for auditability. Include this log on
 ### Ultra
 
 - Workstreams by dimension/entity
-- Batch independent searches/fetches (maximize parallelism)
-- Budget allocation per workstream with early stopping
-- Interim synthesis after each batch
-- Explicit scope, methodology, confidence, and gaps
-- Consider tables, timelines, and diagrams when they improve clarity
-- Complete or summarized retrieval reproducibility log
+- Explicit question tree and source graph for each decision-critical workstream
+- Assign each workstream its own research contract, question tree, queue, evidence ledger, and stopping decision
+- Batch independent searches/fetches across workstreams while preserving separate evidence trails
+- Run foundation, source-chain, gap/conflict, challenge, and freshness passes inside every critical workstream
+- Reallocate search and fetch budget after each convergence review toward unresolved high-impact branches
+- Perform interim synthesis after each batch, then generate new cross-workstream questions from dependencies and inconsistencies
+- Run cross-workstream adjudication for shared entities, metrics, dates, causal claims, and conflicting conclusions
+- Run an independent adversarial pass that attempts to overturn the emerging answer and identifies omitted explanations
+- Iteratively close every critical branch as resolved, partial, conflicting, missing, or blocked
+- Do not finalize while a decision-critical workstream remains merely open; explain any partial, conflicting, missing, or blocked result
+- Explicit scope, methodology, confidence, gaps, and reasons for stopping
+- Auditable claim register with normalized fields, evidence locations, conflict status, and validation result
+- Entity-by-dimension coverage matrix and cross-workstream dependency map
+- Consider tables, timelines, source graphs, and causal diagrams when they improve clarity
+- Complete retrieval reproducibility package: exact queries, tools/routes, pages read, pages rejected with reasons, source-chain paths, workstream decisions, and unresolved items
 
 ## Chinese Ecosystem Search Strategy
 

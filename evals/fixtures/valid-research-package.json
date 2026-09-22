@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "status": "final",
+  "research_contract": {
+    "question": "Was the feature generally available by the cutoff date?",
+    "mode": "quick",
+    "as_of_date": "2026-09-22",
+    "geography": ["global"],
+    "time_window": "through 2026-09-22",
+    "audience": "product evaluator",
+    "decision_context": "Determine whether production adoption is appropriate",
+    "included": ["official availability status"],
+    "excluded": ["performance benchmarking"],
+    "assumptions": []
+  },
+  "capability_profile": {},
+  "branches": [
+    {
+      "id": "B01",
+      "question": "Was the feature generally available?",
+      "critical": true,
+      "status": "resolved",
+      "unresolved_reason": "",
+      "next_action": "",
+      "claim_ids": ["C01"]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Official release notes",
+      "url": "https://example.com/releases/feature",
+      "publisher": "Example Vendor",
+      "source_type": "primary",
+      "published_or_updated": "2026-09-01",
+      "accessed_at": "2026-09-22T09:00:00Z",
+      "exact_location": "General availability section",
+      "origin_id": "S01",
+      "authority": "high",
+      "limitations": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "C01",
+      "text": "The feature was generally available on 2026-09-01.",
+      "claim_type": "fact",
+      "critical": true,
+      "status": "supported",
+      "source_ids": ["S01"],
+      "entity": "Example feature",
+      "period_or_version": "2026-09-01",
+      "geography": "global",
+      "metric_definition": "n/a",
+      "scope_or_denominator": "production release",
+      "unit_or_currency": "n/a",
+      "reasoning": ""
+    }
+  ],
+  "calculations": [],
+  "coverage": [
+    {
+      "dimension": "official facts",
+      "status": "covered",
+      "source_ids": ["S01"],
+      "confidence": "high",
+      "notes": "Official dated release note"
+    }
+  ],
+  "retrieval_log": [],
+  "final_assessment": {
+    "confidence": "high",
+    "bottom_line": "The official release note confirms general availability by the cutoff date.",
+    "critical_gaps": [],
+    "unresolved_conflicts": [],
+    "what_would_change_the_view": ["A later withdrawal notice"],
+    "stopping_reason": "The bounded fact is directly supported by a current primary source."
+  }
+}

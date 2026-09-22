@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "id": "quick-current-fact",
+      "prompt": "查明某个近期发布的软件功能是否已经正式可用，并给出发布日期和适用版本。",
+      "expected_mode": "quick",
+      "expected_experts": [],
+      "must": ["verify current date", "read the official release note", "cite the exact claim"],
+      "must_not": ["rely on a search snippet", "infer availability from an announcement headline"]
+    },
+    {
+      "id": "china-bilingual-industry",
+      "prompt": "研究中国工业机器人市场，说明市场边界、产业链、需求驱动、主要玩家和未来三年风险。",
+      "expected_mode": "pro",
+      "expected_experts": ["industry-market"],
+      "must": ["search Chinese and English", "compare market-size definitions", "use an authority source", "include counter-evidence"],
+      "must_not": ["treat TAM and company revenue as equivalent", "cite only vendor reports"]
+    },
+    {
+      "id": "a-share-point-in-time",
+      "prompt": "以2025年12月31日为信息截止日，对一家A股公司做基本面和估值研究。",
+      "expected_mode": "pro",
+      "expected_experts": ["equity-securities", "company-financials"],
+      "must": ["enforce the as-of cutoff", "verify CNINFO/exchange filings", "normalize share count and corporate actions", "show valuation inputs"],
+      "must_not": ["use evidence published after the cutoff", "mix parent and consolidated figures"]
+    },
+    {
+      "id": "cross-listing-share-class",
+      "prompt": "比较一家公司的美股ADR和港股普通股估值，并解释差异。",
+      "expected_mode": "pro",
+      "expected_experts": ["equity-securities"],
+      "must": ["confirm ADR ratio", "align currency and timestamp", "use diluted share count", "separate liquidity from fundamentals"],
+      "must_not": ["compare raw prices", "double-count shares"]
+    },
+    {
+      "id": "conflicting-market-size",
+      "prompt": "两份报告对同一市场给出差异巨大的规模数字，请判断哪个更可信。",
+      "expected_mode": "pro",
+      "expected_experts": ["industry-market"],
+      "must": ["trace original methodology", "align geography period and denominator", "preserve both values if conflict remains"],
+      "must_not": ["choose the newer number automatically", "average incompatible estimates"]
+    },
+    {
+      "id": "social-platform-sentiment",
+      "prompt": "结合小红书、B站和公开网页，研究一款消费产品的真实用户抱怨。",
+      "expected_mode": "standard",
+      "expected_experts": [],
+      "must": ["audit platform tools", "use platform-native retrieval when available", "treat posts as qualitative evidence", "describe sampling bias"],
+      "must_not": ["generalize post counts to population prevalence", "invent inaccessible comments"]
+    },
+    {
+      "id": "blocked-search-fallback",
+      "prompt": "搜索一个被普通搜索工具低质量覆盖的细分技术主题。",
+      "expected_mode": "standard",
+      "expected_experts": ["technology-product"],
+      "must": ["record the failed path", "switch provider or use site-specific discovery", "fetch primary technical material"],
+      "must_not": ["repeat the same failed query indefinitely", "declare no evidence after one failure"]
+    },
+    {
+      "id": "paywall-and-origin-tracing",
+      "prompt": "核验一篇付费媒体文章引用的关键统计数字。",
+      "expected_mode": "standard",
+      "expected_experts": [],
+      "must": ["trace the cited original source", "cite only publicly verified details", "disclose any remaining access limitation"],
+      "must_not": ["pretend to have read paywalled text", "cite a snippet as full evidence"]
+    },
+    {
+      "id": "healthcare-efficacy-safety",
+      "prompt": "比较两种疗法的临床疗效、安全性和监管状态。",
+      "expected_mode": "pro",
+      "expected_experts": ["healthcare-life-sciences"],
+      "must": ["align population comparator endpoint and follow-up", "separate efficacy from safety", "use regulator or trial registry sources"],
+      "must_not": ["provide personalized medical advice", "compare unaligned trial endpoints as head-to-head evidence"]
+    },
+    {
+      "id": "duplicate-news-echo",
+      "prompt": "判断某项公司声明是否得到多家独立来源证实。",
+      "expected_mode": "standard",
+      "expected_experts": ["company-financials"],
+      "must": ["trace each article to its origin", "count independent origins", "seek non-company evidence"],
+      "must_not": ["count syndications as independent confirmation", "equate repetition with verification"]
+    }
+  ]
+}

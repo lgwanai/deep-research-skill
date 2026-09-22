@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "run": {
+    "skill_version": "candidate",
+    "date": "2026-09-22",
+    "host": "example-host",
+    "notes": "Replace scores after running the case."
+  },
+  "results": [
+    {
+      "case_id": "quick-current-fact",
+      "scores": {
+        "coverage": 5,
+        "citation_support": 5,
+        "source_quality_independence": 5,
+        "freshness_point_in_time": 5,
+        "numerical_consistency": 5,
+        "tool_routing_resilience": 4,
+        "decision_usefulness": 5,
+        "uncertainty_discipline": 5
+      },
+      "critical_failures": [],
+      "notes": "Example only."
+    }
+  ]
+}

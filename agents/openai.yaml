@@ -1,4 +1,4 @@
 interface:
   display_name: "Deep Research Agent"
-  short_description: "Evidence-backed web research and cited reports"
-  default_prompt: "Use $deep-research-agent to research this topic with current sources, verify key claims, and produce a concise cited report."
+  short_description: "Auditable expert research with adaptive retrieval"
+  default_prompt: "Use $deep-research-agent to choose the right expert and retrieval path, validate decision-critical claims, and produce a cited answer with visible confidence and gaps."
